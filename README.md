@@ -1,4 +1,4 @@
-![Demo image](https://github.com/GiuMagnani/phaser-game/game.png)
+![Demo image](https://giumagnani.github.io/phaser-game/game.png)
 
 # Phaser 3 Webpack Project Template
 
