@@ -32,6 +32,8 @@ let objects;
 let resources = 0;
 let scoreText;
 let speed = 160;
+let healthText;
+let food = 0;
 const game = new Phaser.Game(config);
 
 function preload() {
@@ -47,6 +49,10 @@ function create() {
   stars = this.physics.add.staticGroup();
   platforms.create(0, 400, 'ground');
   platforms.create(50, 250, 'ground');
+
+  // Buttons
+  const eatButton = this.add.sprite(100, 100, 'eat').setInteractive();
+  eatButton.on('pointerdown', eat);
 
   objects = this.physics.add.group({
     key: 'bomb',
@@ -66,7 +72,9 @@ function create() {
 
   player = this.physics.add.sprite(60, 60, 'character');
   player.height = 30;
+  player.health = 200;
   player.setBounce(0.2);
+  player.usingFood = false;
   player.setCollideWorldBounds(true);
 
   this.anims.create({
@@ -89,7 +97,9 @@ function create() {
     repeat: 0
   });
 
-  scoreText = this.add.text(16, 16, 'Resources: 0', { fontSize: '32px', fill: '#fff' });
+  scoreText = this.add.text(16, 16, 'Resources: 0', { fontSize: '16px', fill: '#fff' });
+  healthText = this.add.text(16, 32, 'Health: 0', { fontSize: '16px', fill: '#fff' });
+  healthText.setText('Health: ' + player.health);
 
   cursors = this.input.keyboard.createCursorKeys();
 
@@ -104,6 +114,8 @@ function update() {
   player.setVelocityX(0);
   player.setVelocityY(0);
   speed = 100;
+
+  useFood();
 
   if (cursors.shift.isDown) {
     speed = 200;
@@ -132,12 +144,26 @@ function update() {
   }
 }
 
+function useFood() {
+  if (!player.usingFood) {
+    player.usingFood = true;
+    player.health -= 5;
+    healthText.setText('Health: ' + player.health);
+    setTimeout(() => player.usingFood = false, 3000);
+  }
+}
+
 function build() {
   console.log(player);
   stars.create(player.x, player.y + player.height, 'star');
   // object.disableBody(true, true);
   // resources++;
   // scoreText.setText('Resources: ' + resources);
+}
+
+function eat() {
+  player.health += 5;
+  healthText.setText('Health: ' + player.health);
 }
 
 function objectReaction(player, object) {
